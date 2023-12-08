@@ -1,9 +1,7 @@
 # Demo
-
 - Demo idea: e-commerce demo application where the user creates an order and makes the payment and follow the order and payment statuses along the journey.
 
-## Stages of the cycle
-
+## Stages of The Cycle
 1. Order created
 2. Payment created
 3. Payment made
@@ -12,29 +10,26 @@
 6. Order is shipped
 7. Order is delivered
 
-## Kafka topics
-
-**- Orders:**
-
+## Kafka Topics
+### Orders:
 - _orders-created_
 - _orders-ready-to-ship_
 - _orders-shipping_
 - _orders-shipped_
 - _orders-delivered_
-  **- Payments:**
+### Payments:
 - _payments-created_
 - _payments-made_
-  **- Notification:**
+### Notification:
 - _notification-events_
-  **- Delivery:**
+### Delivery:
 - _delivery-shipping_
 - _delivery-shipped_
 - _delivery-delivered_
-  **- Logging:**
+### Logging:
 - _logging-events_
 
-## System services
-
+## System Services
 - Ordering system
 - Payment system
 - Delivery system
@@ -43,8 +38,7 @@
 - Mobile application
 - Email
 
-## Cycle flow
-
+## Cycle Flow
 - Order is "created" via a RESTful endpoint to the ordering system
 - Ordering system calls the payment gateway to get the paymentUrl and returns back to the user
 - Order system sends to notification topic that order is "created" with paymentUrl "https://created"
@@ -75,8 +69,7 @@
 - Order system sends to notification topic that order status is "delivered"
 - Notification system sends to user email and phone number that their order is "delivered"
 
-## System service identities
-
+## System Service Identities
 - Ordering system: producer and consumer: multiple instances in the same consumer group so that no two orders are created
 - Payment system: producer: multiple instances in the same consumer group so that the payment is not made twice
 - Delivery system: producer and consumer
@@ -85,10 +78,13 @@
 - Email: consumer
 - Mobile and email cannot be on the same consumer group as they'll need to consume messages individually
 
-## Kafka topics interested parties
-
-**- Orders:** - _orders-created_ - Producers: - Order system - Consumers - Notification system
-
+## Kafka Topics Interested Parties
+### Orders:
+- _orders-created_
+	- Producers:
+  	- Order system
+- Consumers:
+  - Notification system
 - _orders-ready-to-ship_
   - Producers:
     - Order system
@@ -109,9 +105,7 @@
     - Order system
   - Consumers
     - Notification system
-
-**- Payments:**
-
+### Payments:
 - ~~Payments should not be its own topic as interactions with payment gateways do neither tolerate latency, nor loose error handling.~~
 - But since the Notification topic is cancelled, we'll now use the payment topic to notify the user
 - _payments-created_
@@ -124,9 +118,7 @@
     - Payment system
   - Consumers
     - Notification system
-
-**- Notifications:**
-
+### Notifications:
 - For our specific use case, a notification topic would be an overkill, since other events will do very similar logic, i.e sending notifications for the email and mobile number of the user
   ~~- _notification-events_
   - Producers:
@@ -136,8 +128,7 @@
   - Consumers:
     - Notification system~~
 
-**- Delivery:**
-
+### Delivery:
 - _delivery-shipping_
   - Producers:
     - Delivery system: to update the order status, message queues to achieve loose coupling
@@ -157,8 +148,7 @@
     - Order system
     - Notification system
 
-**- Logging:**
-
+### Logging:
 - _logging-events_
   - Producers:
     - Ordering system
@@ -168,7 +158,6 @@
     - Logging system
 
 ## Interested parties by stage
-
 1. Payment service receives a payment request with the orderId, mobile and email are interested in that event
    (this is not correct as payments are created from the order service via an api request, but only for demo purposes, let's assume that's the case: payment object is created in the ordering service )
 2. Mobile and email are interested in that event
@@ -179,7 +168,6 @@
 7. Order service: to update order status, mobile, email
 
 ## Infra and resources
-
 - 7 Microservices
 - 11 Topics
 - 2 consumer groups: Order system, and Payment system
@@ -187,7 +175,6 @@
 - Default replication factor of 3, calls for 3 Kafka brokers
 
 ### I'll need a K8s deployment resource with:
-
 - Two replicaSets for the Order system and the payment gateway system
   - 1 Microservice for order system
   - 1 Microservice for payment gateway system
@@ -201,7 +188,6 @@
 - 1 API endpoint to make the payment
 
 ### Steps
-
 - Create zookeeper deployment and service yaml from confluent
 - Create kafka deployment and service
 - Manually creating kafka topics

@@ -23,6 +23,19 @@ const kafka = new Kafka({
     brokers: ["localhost:9092"],
 });
 const http = require('http');
+// getting the axios library to make http requests
+const axios = require('axios');
+
+const PORT = 3030;
+const payment_system_url = "http://localhost:3031";
+const ORDER_STATUS_ENUM = {
+    "CREATED": "orders-created",
+    "READY-TO-SHIP": "orders-ready-to-ship",
+    "SHIPPING": "orders-shipping",
+    "SHIPPED": "orders-shipped",
+    "DELIVERED": "orders-delivered"
+};
+
 
 
 let kafka_admin;
@@ -76,11 +89,37 @@ async function consume() {
 
 
 const server = http.createServer(async (req, res) => {
-    console.log("req.url::::  ", req.url);
-    if (req.url === '/') {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        let result = await send("orders-created", "Hello, World!");
-        res.end('Hello, World!');
+    let METHOD = req.method;
+    let URL = req.url;
+    if (METHOD === 'POST' && URL === '/createorder') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString(); // convert Buffer to string
+        });
+        req.on('end', async () => {
+            body = JSON.parse(body);
+            let orderId = body.orderId;
+            let orderStatus = body.status;
+            let targetTopic = ORDER_STATUS_ENUM[orderStatus];
+
+            if (targetTopic === ORDER_STATUS_ENUM["CREATED"]) {
+                // make a request to the payment system to create the payment
+                let payment = await axios.post(`${payment_system_url}/createpayment`, {
+                    orderId: orderId,
+                });
+                console.log("payment::::  ", payment);
+            }
+            // 1- make a request to the payment system to create the payment
+            // 2- send a message to the kafka topic orders-created with the order details
+
+            else {
+                let result = await send(targetTopic, `${JSON.stringify(body)}`);
+            }
+            let sentLogging = await send("logging-events", `ORDER WITH ID${body.orderId} IS NOW ${body.status}`);
+
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end(`Thank you for your order! Your order id is ${orderId}`);
+        });
     } else {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('Not Found');
@@ -127,8 +166,8 @@ async function run() {
         consume();
 
         // if all goes well, start the server
-        server.listen(3030, () => {
-            console.log(`Server is running at http://localhost:${3030}`);
+        server.listen(PORT, () => {
+            console.log(`Order Server is running at http://localhost:${PORT}`);
         });
 
         //

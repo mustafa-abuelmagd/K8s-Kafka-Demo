@@ -1,43 +1,36 @@
-const { Kafka } = require('kafkajs');
-
-run();
+const { Kafka } = require("kafkajs");
 
 async function run() {
     try {
-
+        ///////////////// Connecting to broker(s) /////////////////
         const kafka = new Kafka({
-            clientId: 'my-app',
-            brokers: ['mustafa:9092']
+            clientId: "myapp",
+            brokers: ["localhost:9092"],
         });
 
-        const consumer = kafka.consumer({
-            groupId: `test2-${Date.now()}`
-
-        });
-        console.log('Connecting...');
+        ///////////////// Creating consumer /////////////////
+        const consumer = kafka.consumer({ groupId: "test" });
+        console.log("Connecting... 🔃");
         await consumer.connect();
-        console.log('Connected!');
+        console.log("Connected! ✅");
 
-
-        await consumer.subscribe({
-            topic: 'Users1',
-            fromBeginning: true
+        ///////////////// Consuming /////////////////
+        consumer.subscribe({
+            topic: "Users",
+            fromBeginning: true,
         });
-
         await consumer.run({
-            eachMessage: async ({ topic, partition, message }) => {
-                console.log({
-                    value: message.value.toString(),
-                });
+            eachMessage: async (result) => {
+                console.log(
+                    `Received ${result.message.value} on partition ${result.partition}`
+                );
             },
         });
 
-
-
-    } catch (e) {
-        console.error(`[example/topic] ${e.message}`, e)
+        //
+    } catch (ex) {
+        console.log(`Something bad happened ${ex}`);
     }
-    // finally {
-    //     process.exit(0);
-    // }
 }
+
+run();

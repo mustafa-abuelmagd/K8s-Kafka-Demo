@@ -1,41 +1,42 @@
-const { Kafka } = require('kafkajs');
-let mes = process.argv[2];
-
-
-run();
+const { Kafka } = require("kafkajs");
+const msg = process.argv[2];
+const partition = msg[0] < "N" ? 0 : 1;
 
 async function run() {
     try {
-
+        ///////////////// Connecting to broker(s) /////////////////
         const kafka = new Kafka({
-            clientId: 'my-app',
-            brokers: ['mustafa:9092']
+            clientId: "myapp",
+            brokers: ["localhost:9092"],
         });
 
+        ///////////////// Creating producer /////////////////
         const producer = kafka.producer();
-        console.log('Connecting...');
+        console.log("Connecting... 🔃");
         await producer.connect();
-        console.log('Connected!');
+        console.log("Connected! ✅");
 
-
-        // seding message
-        let result = await producer.send({
-            topic: 'Users1',
+        ///////////////// Producing /////////////////
+        const result = await producer.send({
+            topic: "Users",
             messages: [
-                { value: `${mes}` },
+                {
+                    value: msg,
+                    partition: partition,
+                },
             ],
         });
-
-
-
-        console.log(`Sent Successfully! ${JSON.stringify(result)}`);
+        console.log(`Sent successfully! 🎉 ${JSON.stringify(result)}`);
         await producer.disconnect();
 
+        //
+    } catch (ex) {
+        console.log(`Something bad happened ${ex}`);
 
-    } catch (e) {
-        console.error(`[example/topic] ${e.message}`, e)
-    }
-    finally {
+        //
+    } finally {
         process.exit(0);
     }
 }
+
+run();

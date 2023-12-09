@@ -16,7 +16,7 @@ async function run() {
 
         ///////////////// Consuming /////////////////
         consumer.subscribe({
-            topic: "Users",
+            topic: "orders-created",
             fromBeginning: true,
         });
         await consumer.run({

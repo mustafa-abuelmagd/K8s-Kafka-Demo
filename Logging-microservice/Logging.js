@@ -27,13 +27,10 @@ async function run() {
     });
     await consumer.run({
       eachMessage: async (result) => {
-        console.log(
-          `[${Date.now()}] ---> Event happened! ❗"${result.message.value}"❗`
-        );
+        console.log(`[${Date.now()}] New Event❗ ${result.message.value}`);
       },
     });
-
-    //
+    
   } catch (ex) {
     console.log(`Something bad happened ❌"${ex}"❌`);
   }

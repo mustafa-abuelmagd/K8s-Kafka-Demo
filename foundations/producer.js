@@ -18,7 +18,7 @@ async function run() {
         console.log('Connected!');
 
 
-        // seding message
+        // Sending message
         let result = await producer.send({
             topic: 'orders-created',
             messages: [

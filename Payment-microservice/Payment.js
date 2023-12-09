@@ -56,8 +56,9 @@ const server = http.createServer(async (req, res) => {
             let paymentId = body.orderId;
 
             res.writeHead(200, { 'Content-Type': 'text/plain' });
-            let result = await send("payment-created", `Created a new payment with id ${paymentId}`);
-            result = await send("payment-made", `Created a new payment with id ${paymentId}`);
+            let result = await send("payments-created", `Created a new payment with id ${paymentId}`);
+            result = await send("payments-made", `Created a new payment with id ${paymentId}`);
+            let sentLogging = await send("logging-events", `Created payment WITH ID${paymentId}`);
 
             res.end('Payment created successfully!');
         });

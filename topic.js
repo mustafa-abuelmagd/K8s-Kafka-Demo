@@ -18,12 +18,48 @@ async function run() {
     await admin.createTopics({
       topics: [
         {
-          topic: "Fruits",
-          numPartitions: 2,
+          topic: "orders-created",
+          numPartitions: 1,
+        },
+        {
+          topic: "orders-ready-to-ship",
+          numPartitions: 1,
+        },
+        {
+          topic: "orders-shipping",
+          numPartitions: 1,
+        },
+        {
+          topic: "orders-shipped",
+          numPartitions: 1,
+        },
+        {
+          topic: "orders-delivered",
+          numPartitions: 1,
+        },
+        {
+          topic: "payments-created",
+          numPartitions: 1,
+        },
+        {
+          topic: "payments-made",
+          numPartitions: 1,
+        },
+        {
+          topic: "delivery-shipping",
+          numPartitions: 1,
+        },
+        {
+          topic: "delivery-delivered",
+          numPartitions: 1,
+        },
+        {
+          topic: "logging-events",
+          numPartitions: 1,
         },
       ],
     });
-    console.log("Topic created successfully! 🎉");
+    console.log("Topic(s) created successfully! 🎉");
     await admin.disconnect();
 
     //

@@ -1,3 +1,9 @@
+/****************************************************** 
+Logging Microservice:
+  - Responsible for receiving logs for all possible events
+  - Consumer to the following topics:
+    - logging-events
+*******************************************************/
 const { Kafka } = require("kafkajs");
 
 async function run() {
@@ -21,14 +27,13 @@ async function run() {
     });
     await consumer.run({
       eachMessage: async (result) => {
-        console.log(`[${Date.now()}] ---> Event ❗ ${result.message.value} `);
+        console.log(`[${Date.now()}] New Event❗ ${result.message.value}`);
       },
     });
-
-    //
+    
   } catch (ex) {
-    console.log(`Something bad happened ❌ ${ex} ❌`);
+    console.log(`Something bad happened ❌"${ex}"❌`);
   }
 }
-
+///////////////// Running the consumer /////////////////
 run();

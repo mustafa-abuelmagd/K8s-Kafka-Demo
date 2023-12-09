@@ -12,12 +12,12 @@ services:
     hostname: kafka-broker-1
     container_name: training-broker-1
     ports:
-      - "19092:19092"
+      - "9092:9092"
     depends_on:
       - zookeeper
     environment:
        KAFKA_BROKER_ID: 1
        KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-1:9092,PLAINTEXT_INTERNAL://localhost:19092
+       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-1:9092,PLAINTEXT_INTERNAL://localhost:9092
        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1

@@ -1,0 +1,1 @@
+## docker run --name kafka -p 9092:9092 --link zookeeper --env KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://mustafa:9092  confluentinc/cp-kafka
